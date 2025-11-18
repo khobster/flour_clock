@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let globalInterval = null;
 
-    /* ===== utility: storage ===== */
+    /* ===== storage helpers ===== */
 
     function saveBatches() {
         try {
