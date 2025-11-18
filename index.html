@@ -19,19 +19,38 @@
 <body>
     <div id="dough-app" class="container">
 
-        <!-- HEADER: image + title -->
+        <!-- HEADER: image + title + subtitle -->
         <div id="headerRow">
             <img
                 id="headerImage"
                 src="adriana-is-it.png"
                 alt="Is it done already?"
             >
-            <div id="timerDisplay">dough timer</div>
+
+            <div id="headerText">
+                <!-- Google-style colored title -->
+                <div id="appTitle" aria-label="dough timer">
+                    <span class="g-blue">d</span>
+                    <span class="g-red">o</span>
+                    <span class="g-yellow">u</span>
+                    <span class="g-blue">g</span>
+                    <span class="g-green">h</span>
+                    <span class="g-space">&nbsp;</span>
+                    <span class="g-blue">t</span>
+                    <span class="g-red">i</span>
+                    <span class="g-yellow">m</span>
+                    <span class="g-blue">e</span>
+                    <span class="g-green">r</span>
+                </div>
+
+                <!-- dynamic “Next batch in …” text -->
+                <div id="timerDisplay">Next batch in --:--:--</div>
+            </div>
         </div>
 
         <form id="batchesForm">
             <div id="batchInputs">
-                <!-- Batch inputs added here -->
+                <!-- Batch inputs will be added here -->
             </div>
             <button id="addBatch" type="button">Add Batch</button>
             <button type="submit">Start Timers</button>
