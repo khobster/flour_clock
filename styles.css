@@ -27,7 +27,7 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* HEADER: image + title */
+/* HEADER: image + title + subtitle */
 #headerRow {
     display: flex;
     align-items: flex-start;
@@ -41,13 +41,33 @@ body {
     object-fit: contain;
 }
 
-#timerDisplay {
-    flex: 1;
-    font-size: 2.2rem;
+#headerText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Google-style “dough timer” */
+#appTitle {
     font-family: 'Anton', sans-serif;
-    color: #333;
-    text-align: left;
+    font-size: 2.4rem;
+    text-transform: lowercase;
     line-height: 1.1;
+}
+
+/* Google brand colors */
+.g-blue   { color: #4285F4; }
+.g-red    { color: #DB4437; }
+.g-yellow { color: #F4B400; }
+.g-green  { color: #0F9D58; }
+.g-space  { display: inline-block; width: 0.4em; }
+
+/* dynamic subtitle */
+#timerDisplay {
+    margin-top: 4px;
+    font-size: 1.05rem;
+    font-family: 'Fjalla One', sans-serif;
+    color: #444;
 }
 
 /* Input rows (batch setup) */
@@ -153,11 +173,12 @@ button:hover {
         align-items: center;
     }
 
-    #timerDisplay {
-        text-align: center;
-    }
-
     #headerImage {
         max-width: 70%;
+    }
+
+    #appTitle,
+    #timerDisplay {
+        text-align: center;
     }
 }
