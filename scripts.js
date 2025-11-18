@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const STORAGE_KEY = 'doughTimerBatches';
+
     const batches = [];
-    const bellSound = new Audio('bell.mp3'); // optional sound, can remove if you want
+    const bellSound = new Audio('bell.mp3'); // optional
 
     const batchInputsContainer = document.getElementById('batchInputs');
     const addBatchBtn = document.getElementById('addBatch');
@@ -9,6 +11,61 @@ document.addEventListener('DOMContentLoaded', function () {
     const timerDisplay = document.getElementById('timerDisplay');
 
     let globalInterval = null;
+
+    /* ===== utility: storage ===== */
+
+    function saveBatches() {
+        try {
+            const simplified = batches.map(b => ({
+                id: b.id,
+                name: b.name,
+                endTime: b.endTime
+            }));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(simplified));
+        } catch (e) {
+            console.error('Failed to save batches', e);
+        }
+    }
+
+    function renderBatch(batch) {
+        const li = document.createElement('li');
+        li.className = 'batchItem';
+        li.dataset.batchId = batch.id;
+        li.innerHTML = `
+            <div class="batchCard">
+                <div class="batchTitle">${batch.name}</div>
+                <div class="batchCountdown">--:--:--</div>
+                <div class="batchReadyAt">ready: ${formatReadyTime(batch.endTime)}</div>
+            </div>
+        `;
+        batchList.appendChild(li);
+    }
+
+    function loadBatches() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return;
+
+            parsed.forEach(b => {
+                if (!b || typeof b.endTime !== 'number') return;
+
+                const batch = {
+                    id: b.id || `batch-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                    name: b.name || 'batch',
+                    endTime: b.endTime,
+                    done: false
+                };
+                batches.push(batch);
+                renderBatch(batch);
+            });
+        } catch (e) {
+            console.error('Failed to load batches', e);
+        }
+    }
+
+    /* ===== UI helpers ===== */
 
     function addBatchInput() {
         const inputHTML = `
@@ -24,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     type="number"
                     class="batchHours"
                     name="batchHours[]"
-                    placeholder="Hours"
+                    placeholder="Hours (48 or 72)"
                     min="1"
                     max="240"
                     required
@@ -33,18 +90,15 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         batchInputsContainer.insertAdjacentHTML('beforeend', inputHTML);
 
-        // Focus the name field of the new row
         const lastRow = batchInputsContainer.lastElementChild;
         const nameInput = lastRow.querySelector('.batchName');
         if (nameInput) nameInput.focus();
     }
 
-    // Add first row on load
-    addBatchInput();
-
     addBatchBtn.addEventListener('click', addBatchInput);
 
-    // Start / add batches
+    /* ===== main submit (start / add batches) ===== */
+
     batchesForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -61,56 +115,45 @@ document.addEventListener('DOMContentLoaded', function () {
             const name = (nameInput.value || '').trim();
             const hours = parseFloat(hourInput.value);
 
-            // Only convert rows that are fully filled out
             if (!name || isNaN(hours) || hours <= 0) {
                 return;
             }
 
-            const durationMs = hours * 60 * 60 * 1000; // hours → ms
+            const durationMs = hours * 60 * 60 * 1000;
             const endTime = now + durationMs;
 
-            // Unique-ish ID
             const id = `batch-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-            const li = document.createElement('li');
-            li.className = 'batchItem';
-            li.dataset.batchId = id;
-            li.innerHTML = `
-                <div class="batchCard">
-                    <div class="batchTitle">${name}</div>
-                    <div class="batchCountdown">--:--:--</div>
-                    <div class="batchReadyAt">ready: ${formatReadyTime(endTime)}</div>
-                </div>
-            `;
-            batchList.appendChild(li);
-
-            batches.push({
+            const batch = {
                 id,
                 name,
                 endTime,
                 done: false
-            });
+            };
+            batches.push(batch);
+            renderBatch(batch);
 
-            // 🔥 Remove the input row now that it's a live timer
+            // remove the input row now that it's a live timer
             row.remove();
 
             newBatchesAdded = true;
         });
 
-        // If nothing new was added, don't start/update anything
         if (!newBatchesAdded) return;
 
-        // Make sure there is always at least one blank row to use next
+        // always leave at least one blank row for the next batch
         if (batchInputsContainer.children.length === 0) {
             addBatchInput();
         }
 
-        // Kick the timer loop
+        saveBatches();
         tick();
         if (!globalInterval) {
             globalInterval = setInterval(tick, 1000);
         }
     });
+
+    /* ===== ticking ===== */
 
     function tick() {
         const now = Date.now();
@@ -132,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!batch.done) {
                     batch.done = true;
-                    // play bell once when it flips to READY
                     bellSound.play().catch(() => {});
                 }
             } else {
@@ -152,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (batches.length > 0) {
             timerDisplay.textContent = 'All batches are ready';
         } else {
-            timerDisplay.textContent = 'Dough Timer';
+            timerDisplay.textContent = 'Next batch in --:--:--';
         }
 
         if (allDone && globalInterval) {
@@ -160,6 +202,8 @@ document.addEventListener('DOMContentLoaded', function () {
             globalInterval = null;
         }
     }
+
+    /* ===== formatting helpers ===== */
 
     function formatDuration(ms) {
         const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -176,11 +220,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function formatReadyTime(timestamp) {
         const d = new Date(timestamp);
-        // e.g. "Wed 9:30 PM"
         return d.toLocaleString(undefined, {
             weekday: 'short',
             hour: 'numeric',
             minute: '2-digit'
         });
+    }
+
+    /* ===== init on page load ===== */
+
+    loadBatches();
+
+    if (batches.length > 0) {
+        tick();
+        globalInterval = setInterval(tick, 1000);
+    }
+
+    // ensure at least one blank row exists
+    if (batchInputsContainer.children.length === 0) {
+        addBatchInput();
     }
 });
