@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const batches = [];
-    const bellSound = new Audio('bell.mp3'); // optional, reuse Palooka bell
+    const bellSound = new Audio('bell.mp3'); // optional sound, can remove if you want
 
     const batchInputsContainer = document.getElementById('batchInputs');
     const addBatchBtn = document.getElementById('addBatch');
@@ -40,32 +40,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     addBatchBtn.addEventListener('click', addBatchInput);
 
+    // Start / add batches
     batchesForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Reset any previous state
-        batches.length = 0;
-        batchList.innerHTML = '';
-
-        const nameInputs = document.querySelectorAll('.batchName');
-        const hourInputs = document.querySelectorAll('.batchHours');
+        const inputRows = document.querySelectorAll('.batchInput');
         const now = Date.now();
+        let newBatchesAdded = false;
 
-        nameInputs.forEach(function (nameInput, idx) {
-            const hours = parseFloat(hourInputs[idx].value);
+        inputRows.forEach(function (row) {
+            // Skip rows we've already started
+            if (row.dataset.started === 'true') return;
 
-            if (isNaN(hours) || hours <= 0) return;
+            const nameInput = row.querySelector('.batchName');
+            const hourInput = row.querySelector('.batchHours');
+
+            const name = (nameInput.value || '').trim();
+            const hours = parseFloat(hourInput.value);
+
+            if (!name || isNaN(hours) || hours <= 0) {
+                // Incomplete row? Skip it, don't crash
+                return;
+            }
 
             const durationMs = hours * 60 * 60 * 1000; // hours → ms
             const endTime = now + durationMs;
-            const id = `batch-${idx}-${endTime}`;
+
+            // Unique-ish ID
+            const id = `batch-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
             const li = document.createElement('li');
             li.className = 'batchItem';
             li.dataset.batchId = id;
             li.innerHTML = `
                 <div class="batchCard">
-                    <div class="batchTitle">${nameInput.value}</div>
+                    <div class="batchTitle">${name}</div>
                     <div class="batchCountdown">--:--:--</div>
                     <div class="batchReadyAt">ready: ${formatReadyTime(endTime)}</div>
                 </div>
@@ -74,28 +83,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             batches.push({
                 id,
-                name: nameInput.value,
+                name,
                 endTime,
                 done: false
             });
+
+            // Lock this row so you don't edit it mid-ferment
+            row.dataset.started = 'true';
+            nameInput.disabled = true;
+            hourInput.disabled = true;
+
+            newBatchesAdded = true;
         });
 
-        // Lock the form so you don't accidentally change hours mid-ferment
-        nameInputs.forEach(input => input.disabled = true);
-        hourInputs.forEach(input => input.disabled = true);
-        addBatchBtn.disabled = true;
-        batchesForm.querySelector('button[type="submit"]').disabled = true;
+        // If nothing new was added, don't do anything
+        if (!newBatchesAdded) return;
 
-        if (batches.length === 0) return;
-
-        // Clear any old interval
-        if (globalInterval) {
-            clearInterval(globalInterval);
-        }
-
-        // Immediate tick, then every second
+        // Kick the timer loop
         tick();
-        globalInterval = setInterval(tick, 1000);
+        if (!globalInterval) {
+            globalInterval = setInterval(tick, 1000);
+        }
     });
 
     function tick() {
@@ -137,6 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Next batch in ' + formatDuration(nextRemaining);
         } else if (batches.length > 0) {
             timerDisplay.textContent = 'All batches are ready';
+        } else {
+            timerDisplay.textContent = 'Dough Timer';
         }
 
         if (allDone && globalInterval) {
@@ -151,9 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
 
-        return (
-            pad(hours) + ':' + pad(minutes) + ':' + pad(seconds)
-        );
+        return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
     }
 
     function pad(num) {
