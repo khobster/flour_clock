@@ -11,9 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let globalInterval = null;
 
     function addBatchInput() {
-        const index = batchInputsContainer.children.length;
         const inputHTML = `
-            <div class="batchInput" data-batch-index="${index}">
+            <div class="batchInput">
                 <input
                     type="text"
                     class="batchName"
@@ -33,6 +32,11 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `;
         batchInputsContainer.insertAdjacentHTML('beforeend', inputHTML);
+
+        // Focus the name field of the new row
+        const lastRow = batchInputsContainer.lastElementChild;
+        const nameInput = lastRow.querySelector('.batchName');
+        if (nameInput) nameInput.focus();
     }
 
     // Add first row on load
@@ -44,22 +48,21 @@ document.addEventListener('DOMContentLoaded', function () {
     batchesForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const inputRows = document.querySelectorAll('.batchInput');
         const now = Date.now();
+        const inputRows = Array.from(
+            batchInputsContainer.querySelectorAll('.batchInput')
+        );
         let newBatchesAdded = false;
 
         inputRows.forEach(function (row) {
-            // Skip rows we've already started
-            if (row.dataset.started === 'true') return;
-
             const nameInput = row.querySelector('.batchName');
             const hourInput = row.querySelector('.batchHours');
 
             const name = (nameInput.value || '').trim();
             const hours = parseFloat(hourInput.value);
 
+            // Only convert rows that are fully filled out
             if (!name || isNaN(hours) || hours <= 0) {
-                // Incomplete row? Skip it, don't crash
                 return;
             }
 
@@ -88,16 +91,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 done: false
             });
 
-            // Lock this row so you don't edit it mid-ferment
-            row.dataset.started = 'true';
-            nameInput.disabled = true;
-            hourInput.disabled = true;
+            // 🔥 Remove the input row now that it's a live timer
+            row.remove();
 
             newBatchesAdded = true;
         });
 
-        // If nothing new was added, don't do anything
+        // If nothing new was added, don't start/update anything
         if (!newBatchesAdded) return;
+
+        // Make sure there is always at least one blank row to use next
+        if (batchInputsContainer.children.length === 0) {
+            addBatchInput();
+        }
 
         // Kick the timer loop
         tick();
@@ -170,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function formatReadyTime(timestamp) {
         const d = new Date(timestamp);
-        // e.g. "Fri 7:30 PM"
+        // e.g. "Wed 9:30 PM"
         return d.toLocaleString(undefined, {
             weekday: 'short',
             hour: 'numeric',
