@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     type="number"
                     class="batchHours"
                     name="batchHours[]"
-                    placeholder="Hours (48 or 72)"
+                    placeholder="Hours"
                     min="1"
                     max="240"
                     required
