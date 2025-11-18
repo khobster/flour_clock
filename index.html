@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="flower.png">
+    <title>dough timer</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YEY8TME7E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YEY8TME7E5');
+    </script>
+</head>
+<body>
+    <div id="dough-app" class="container">
+        <div id="timerDisplay">Dough Timer</div>
+
+        <form id="batchesForm">
+            <div id="batchInputs">
+                <!-- Batch inputs will be dynamically added here -->
+            </div>
+            <button id="addBatch" type="button">Add Batch</button>
+            <button type="submit">Start Timers</button>
+        </form>
+
+        <ol id="batchList" class="batch-list">
+            <!-- Batches + countdowns will be displayed here -->
+        </ol>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
