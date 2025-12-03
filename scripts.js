@@ -33,12 +33,33 @@ document.addEventListener('DOMContentLoaded', function () {
         li.dataset.batchId = batch.id;
         li.innerHTML = `
             <div class="batchCard">
+                <button class="deleteBtn" type="button" aria-label="Delete batch">&times;</button>
                 <div class="batchTitle">${batch.name}</div>
                 <div class="batchCountdown">--:--:--</div>
                 <div class="batchReadyAt">ready: ${formatReadyTime(batch.endTime)}</div>
             </div>
         `;
+
+        li.querySelector('.deleteBtn').addEventListener('click', function () {
+            deleteBatch(batch.id);
+        });
+
         batchList.appendChild(li);
+    }
+
+    function deleteBatch(id) {
+        const idx = batches.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            batches.splice(idx, 1);
+        }
+
+        const li = batchList.querySelector(`li[data-batch-id="${id}"]`);
+        if (li) {
+            li.remove();
+        }
+
+        saveBatches();
+        tick();
     }
 
     function loadBatches() {
