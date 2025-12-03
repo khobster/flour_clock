@@ -1,12 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
-
 body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
 }
-
 .container {
     display: flex;
     flex-direction: column;
@@ -16,7 +14,6 @@ body {
     height: auto;
     min-height: 100vh;
 }
-
 #dough-app {
     width: 80%;
     max-width: 600px;
@@ -26,7 +23,6 @@ body {
     margin: 0 auto;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 /* HEADER: image + title + subtitle */
 #headerRow {
     display: flex;
@@ -34,34 +30,29 @@ body {
     gap: 16px;
     margin-bottom: 24px;
 }
-
 #headerImage {
     max-width: 180px;
     height: auto;
     object-fit: contain;
 }
-
 #headerText {
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-
-/* Google-style “dough timer” */
+/* Google-style "dough timer" */
 #appTitle {
     font-family: 'Anton', sans-serif;
     font-size: 2.4rem;
     text-transform: lowercase;
     line-height: 1.1;
 }
-
 /* Google brand colors */
 .g-blue   { color: #4285F4; }
 .g-red    { color: #DB4437; }
 .g-yellow { color: #F4B400; }
 .g-green  { color: #0F9D58; }
 .g-space  { display: inline-block; width: 0.4em; }
-
 /* dynamic subtitle */
 #timerDisplay {
     margin-top: 4px;
@@ -69,7 +60,6 @@ body {
     font-family: 'Fjalla One', sans-serif;
     color: #444;
 }
-
 /* Input rows (batch setup) */
 .batchInput {
     display: flex;
@@ -77,7 +67,6 @@ body {
     align-items: center;
     margin-bottom: 15px;
 }
-
 .batchInput input[type="text"] {
     flex-grow: 1;
     padding: 12px;
@@ -88,7 +77,6 @@ body {
     font-size: 1.1rem;
     box-sizing: border-box;
 }
-
 .batchInput input[type="number"] {
     width: 140px;
     padding: 12px;
@@ -98,7 +86,6 @@ body {
     font-size: 1.1rem;
     box-sizing: border-box;
 }
-
 /* Buttons */
 button {
     padding: 12px 25px;
@@ -112,11 +99,9 @@ button {
     margin: 5px;
     transition: background-color 0.3s;
 }
-
 button:hover {
     background-color: #357ae8;
 }
-
 /* Batch list / cards */
 .batch-list {
     list-style: none;
@@ -124,12 +109,11 @@ button:hover {
     margin-top: 25px;
     width: 100%;
 }
-
 .batchItem + .batchItem {
     margin-top: 12px;
 }
-
 .batchCard {
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 12px 14px;
@@ -137,46 +121,70 @@ button:hover {
     border: 1px solid #e5e7eb;
     background-color: #fafafa;
 }
-
 .batchTitle {
     font-family: 'Fjalla One', sans-serif;
     font-size: 1.2rem;
     margin-bottom: 6px;
 }
-
 .batchCountdown {
     font-family: 'Anton', sans-serif;
     font-size: 1.6rem;
     margin-bottom: 4px;
 }
-
 .batchReadyAt {
     font-size: 0.9rem;
     color: #6b7280;
 }
-
+/* Delete button */
+.deleteBtn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+.deleteBtn:hover {
+    background-color: #DB4437;
+    color: white;
+}
+.batchReady .deleteBtn {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+.batchReady .deleteBtn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #16a34a;
+}
 /* When a batch is done */
 .batchReady .batchCard {
     background-color: #16a34a;
     border-color: #16a34a;
     color: white;
 }
-
 .batchReady .batchReadyAt {
     color: rgba(255, 255, 255, 0.9);
 }
-
 /* Small screens */
 @media (max-width: 480px) {
     #headerRow {
         flex-direction: column;
         align-items: center;
     }
-
     #headerImage {
         max-width: 70%;
     }
-
     #appTitle,
     #timerDisplay {
         text-align: center;
