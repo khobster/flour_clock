@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="flower.png">
+    <link rel="icon" type="image/png" href="doughtimerfavicon.png">
     <title>dough timer</title>
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YEY8TME7E5"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -19,7 +18,6 @@
 <body>
     <div id="dough-app" class="container">
 
-        <!-- HEADER: image + title + subtitle -->
         <div id="headerRow">
             <img
                 id="headerImage"
@@ -28,7 +26,6 @@
             >
 
             <div id="headerText">
-                <!-- Google-style colored title -->
                 <div id="appTitle" aria-label="dough timer">
                     <span class="g-blue">d</span>
                     <span class="g-red">o</span>
@@ -43,22 +40,19 @@
                     <span class="g-green">r</span>
                 </div>
 
-                <!-- dynamic “Next batch in …” text -->
                 <div id="timerDisplay">Next batch in --:--:--</div>
             </div>
         </div>
 
         <form id="batchesForm">
             <div id="batchInputs">
-                <!-- Batch inputs will be added here -->
-            </div>
+                </div>
             <button id="addBatch" type="button">Add Batch</button>
             <button type="submit">Start Timers</button>
         </form>
 
         <ol id="batchList" class="batch-list">
-            <!-- Batches + countdowns will be displayed here -->
-        </ol>
+            </ol>
     </div>
 
     <script src="scripts.js"></script>
